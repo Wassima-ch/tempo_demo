@@ -1,0 +1,39 @@
+version: "3.8"
+services:
+  tempo:
+    image: grafana/tempo:latest
+    command: [ "-config.file=/etc/tempo-config.yaml" ]
+    volumes:
+      - ./tempo-config.yaml:/etc/tempo-config.yaml
+    ports:
+      - "4317:4317"
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+    depends_on:
+      - tempo
+
+  order-service:
+    build: ./order-service
+    ports: ["8081:8081"]
+    environment:
+      - OTEL_URL=http://tempo:4317
+    depends_on: [tempo]
+
+  inventory-service:
+    build: ./inventory-service
+    ports: ["8082:8082"]
+    environment:
+      - OTEL_URL=http://tempo:4317
+    depends_on: [tempo]
+
+  payment-service:
+    build: ./payment-service
+    ports: ["8083:8083"]
+    environment:
+      - OTEL_URL=http://tempo:4317
+    depends_on: [tempo]

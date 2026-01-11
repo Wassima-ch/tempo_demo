@@ -101,3 +101,7 @@ Pour arrêter et supprimer les conteneurs :
 ```Bash
 docker-compose down
 ```
+```Bash
+docker-compose logs --tail=10 order-service
+docker-compose logs order-service
+```
